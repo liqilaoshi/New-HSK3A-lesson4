@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HSK 3 课文1 - 在王一飞家客厅，杨同乐和王一飞在聊天儿</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Noto Sans SC', 'Roboto', sans-serif;
+      background-color: #fcfaf9;
+      color: #333;
+      user-select: none;
+    }
+
+    /* HSK 3 Coral Orange Aesthetic Tokens */
+    .hsk-header-bg {
+      background-color: #f18b62;
+    }
+    .hsk-orange {
+      background-color: #f18b62;
+    }
+    .hsk-orange-hover:hover {
+      background-color: #e2784e;
+    }
+    .hsk-orange-dark {
+      background-color: #d96f45;
+    }
+    .hsk-orange-light {
+      background-color: #fdf2ed;
+    }
+
+    /* Page Navigation Transitions */
+    .page {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .page.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* Option Item Styles for Quiz */
+    .quiz-option {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .quiz-option:hover {
+      background-color: rgba(255, 255, 255, 0.24);
+      transform: translateX(4px);
+    }
+    .quiz-option.selected {
+      background-color: #ffffff !important;
+      color: #c2410c !important;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    /* Auto-Grading Classes */
+    .quiz-option.correct-choice {
+      background-color: #dcfce7 !important;
+      color: #15803d !important;
+      border: 2px solid #22c55e;
+      font-weight: bold;
+    }
+    .quiz-option.wrong-choice {
+      background-color: #fee2e2 !important;
+      color: #b91c1c !important;
+      border: 2px solid #ef4444;
+      text-decoration: line-through;
+    }
+
+    /* Speech Bubble Pointers for Page 3 */
+    .speech-bubble {
+      position: relative;
+      border: 2px solid #f7d6c8;
+      background-color: #ffffff;
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 14px 14px 0;
+      border-style: solid;
+      border-color: #ffffff transparent transparent;
+    }
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -17px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 16px 16px 0;
+      border-style: solid;
+      border-color: #f7d6c8 transparent transparent;
+    }
+
+    /* Audio wave animation */
+    .audio-pulse {
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between pb-10">
+
+  <!-- Shared Audio Source (Lesson 4-1) -->
+  <audio id="lessonAudio" src="https://files.catbox.moe/r1core.mp3" preload="auto"></audio>
+
+  <!-- Main Container -->
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 w-full flex-grow">
+
+    <!-- Step Indicator Tabs -->
+    <div class="flex items-center justify-end gap-2 mb-3">
+      <button onclick="switchPage(1)" id="tab1" class="px-3 py-1 rounded-full text-xs font-bold transition bg-[#f18b62] text-white shadow-sm">
+        1. 课文导入
+      </button>
+      <button onclick="switchPage(2)" id="tab2" class="px-3 py-1 rounded-full text-xs font-bold transition bg-orange-100 text-orange-800 hover:bg-orange-200">
+        2. 听力选择
+      </button>
+      <button onclick="switchPage(3)" id="tab3" class="px-3 py-1 rounded-full text-xs font-bold transition bg-orange-100 text-orange-800 hover:bg-orange-200">
+        3. 课文练习
+      </button>
+    </div>
+
+    <!-- Header Section: Pages 1 & 2 (Text 1) -->
+    <div id="headerText1" class="hsk-header-bg rounded-2xl p-5 sm:p-6 text-white shadow-md mb-6 relative overflow-hidden">
+      <div class="inline-block bg-white/25 backdrop-blur-md text-white text-xs sm:text-sm font-semibold px-4 py-1 rounded-full mb-3">
+        Text 1
+      </div>
+      <div class="text-xl sm:text-2xl md:text-3xl font-bold flex items-start gap-2 leading-snug">
+        <span>课文1</span>
+        <i class="fa-solid fa-location-dot text-amber-200 text-lg sm:text-xl mt-1"></i>
+        <span>在王一飞家客厅，杨同乐和王一飞在聊天儿。</span>
+      </div>
+      <p class="text-white/95 text-sm sm:text-base font-normal mt-2 pl-1">
+        In Wang Yifei’s living room, Yang Tongle and Wang Yifei were chatting.
+      </p>
+    </div>
+
+    <!-- Header Section: Page 3 (Text Exercises) -->
+    <div id="headerTextExercises" class="hsk-header-bg rounded-2xl p-5 sm:p-6 text-white shadow-md mb-6 relative overflow-hidden hidden">
+      <div class="inline-block bg-white/25 backdrop-blur-md text-white text-xs sm:text-sm font-semibold px-4 py-1 rounded-full mb-3">
+        Text Exercises
+      </div>
+      <div class="text-2xl sm:text-3xl font-bold tracking-wide">
+        课文练习
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 1: Text 1 Audio & Scene Page          -->
+    <!-- ========================================== -->
+    <div id="page1" class="page active">
+      <div class="bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-orange-100 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+          
+          <!-- Left: Grassland Scene Image -->
+          <div class="md:col-span-8 rounded-2xl overflow-hidden shadow-inner border border-gray-100 flex items-center justify-center bg-gray-50">
+            <img 
+              src="https://i.ibb.co.com/3myk1d6K/image.png" 
+              alt="草原风景" 
+              class="w-full h-auto max-h-[420px] object-cover rounded-xl"
+              onerror="this.onerror=null; this.src='https://placehold.co/800x500/f18b62/ffffff?text=Lesson+4+Text+1+Grassland';"
+            />
+          </div>
+
+          <!-- Right: Coral Orange Audio Player Panel -->
+          <div class="md:col-span-4 hsk-orange rounded-2xl p-6 text-white flex flex-col justify-between shadow-sm min-h-[260px]">
+            <div>
+              <!-- Audio Play Control Card (4-1) -->
+              <button 
+                onclick="toggleAudio()" 
+                id="p1AudioBtn"
+                class="w-full bg-white/15 hover:bg-white/25 border border-white/35 rounded-2xl p-4 transition duration-200 flex items-center justify-center gap-3 mb-6 group cursor-pointer"
+              >
+                <div id="p1IconBg" class="w-12 h-12 rounded-full bg-white text-[#f18b62] flex items-center justify-center text-xl shadow-md group-hover:scale-110 transition-transform">
+                  <i id="p1AudioIcon" class="fa-solid fa-volume-high"></i>
+                </div>
+                <div class="text-left">
+                  <div class="text-2xl font-bold tracking-wider">4-1</div>
+                  <div id="p1AudioStatus" class="text-xs text-white/90">点击播放课文朗读</div>
+                </div>
+              </button>
+
+              <!-- Audio Seek/Progress Bar -->
+              <div class="w-full bg-black/15 h-2 rounded-full overflow-hidden mb-4 cursor-pointer" onclick="seekAudio(event)">
+                <div id="audioProgressBar" class="h-full w-0 transition-all duration-100 bg-white"></div>
+              </div>
+            </div>
+
+            <!-- Page 30 Textbook Content Hint -->
+            <div class="bg-black/10 rounded-xl p-4 text-sm leading-relaxed border border-white/15">
+              <p class="font-bold mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-book-open"></i> 课文内容请见课本P30。
+              </p>
+              <p class="text-xs text-white/90">
+                Please refer to page 30 of the textbook for the content of the text.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Page 1 Navigation Button -->
+      <div class="flex justify-end">
+        <button 
+          onclick="switchPage(2)" 
+          class="px-8 py-3.5 hsk-orange hsk-orange-hover text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center gap-2 text-base"
+        >
+          进入听力练习 (下一页)
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 2: Listening Comprehension Quiz Page  -->
+    <!-- ========================================== -->
+    <div id="page2" class="page">
+      
+      <!-- Coral Orange Quiz Panel matching Image 2 -->
+      <div class="hsk-orange rounded-3xl p-6 sm:p-8 text-white shadow-lg mb-6 relative">
+        
+        <!-- Header Bar inside Quiz Panel -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b border-white/25 pb-4">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-wide">
+              听两遍对话，选择正确答案。
+            </h2>
+            <p class="text-white/90 text-sm mt-1">
+              Listen to the dialogue twice and choose the correct answer.
+            </p>
+          </div>
+
+          <!-- Replay Audio Button (🔊 4-1) -->
+          <button 
+            onclick="toggleAudio()" 
+            id="p2AudioBtn"
+            class="bg-white hover:bg-orange-50 text-[#e26c3e] font-bold px-5 py-2.5 rounded-xl shadow-md transition flex items-center gap-2 text-sm sm:text-base self-end sm:self-auto"
+          >
+            <i id="p2AudioIcon" class="fa-solid fa-volume-high text-lg"></i>
+            <span>4-1 播放 / 暂停</span>
+          </button>
+        </div>
+
+        <!-- Question (1) -->
+        <div class="mb-8 bg-black/10 rounded-2xl p-5 border border-white/15">
+          <div class="text-lg sm:text-xl font-bold mb-4 flex items-start gap-2">
+            <span class="bg-white/25 px-2.5 py-0.5 rounded-lg text-sm mt-0.5">(1)</span>
+            <span>王一飞和杨同乐在说什么？</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3" id="q1Options">
+            <div onclick="selectOption(1, 'A')" id="q1_A" class="quiz-option bg-white/15 rounded-xl p-3.5 px-4 flex items-center gap-3 border border-white/25 text-base sm:text-lg">
+              <span class="font-bold text-amber-200">A</span> 明天的天气
+            </div>
+            <div onclick="selectOption(1, 'B')" id="q1_B" class="quiz-option bg-white/15 rounded-xl p-3.5 px-4 flex items-center gap-3 border border-white/25 text-base sm:text-lg">
+              <span class="font-bold text-amber-200">B</span> 喜欢吃什么
+            </div>
+            <div onclick="selectOption(1, 'C')" id="q1_C" class="quiz-option bg-white/15 rounded-xl p-3.5 px-4 flex items-center gap-3 border border-white/25 text-base sm:text-lg">
+              <span class="font-bold text-amber-200">C</span> 假期做什么
+            </div>
+          </div>
+        </div>
+
+        <!-- Question (2) -->
+        <div class="mb-2 bg-black/10 rounded-2xl p-5 border border-white/15">
+          <div class="text-lg sm:text-xl font-bold mb-4 flex items-start gap-2">
+            <span class="bg-white/25 px-2.5 py-0.5 rounded-lg text-sm mt-0.5">(2)</span>
+            <span>杨同乐觉得草原怎么样？</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3" id="q2Options">
+            <div onclick="selectOption(2, 'A')" id="q2_A" class="quiz-option bg-white/15 rounded-xl p-3.5 px-4 flex items-center gap-3 border border-white/25 text-base sm:text-lg">
+              <span class="font-bold text-amber-200">A</span> 草原天气不好
+            </div>
+            <div onclick="selectOption(2, 'B')" id="q2_B" class="quiz-option bg-white/15 rounded-xl p-3.5 px-4 flex items-center gap-3 border border-white/25 text-base sm:text-lg">
+              <span class="font-bold text-amber-200">B</span> 草原比海边冷
+            </div>
+            <div onclick="selectOption(2, 'C')" id="q2_C" class="quiz-option bg-white/15 rounded-xl p-3.5 px-4 flex items-center gap-3 border border-white/25 text-base sm:text-lg">
+              <span class="font-bold text-amber-200">C</span> 草原很有意思
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Bar -->
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-orange-100 shadow-sm">
+        <button 
+          onclick="switchPage(1)" 
+          class="w-full sm:w-auto px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition flex items-center justify-center gap-2"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+          上一页
+        </button>
+
+        <div class="flex flex-wrap items-center justify-center gap-3 w-full sm:w-auto">
+          <button 
+            onclick="resetQuiz()" 
+            class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition flex items-center justify-center gap-2"
+          >
+            <i class="fa-solid fa-rotate-right"></i>
+            重置 / Reset
+          </button>
+          <button 
+            onclick="submitQuiz()" 
+            class="px-6 py-2.5 hsk-orange hsk-orange-hover text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2"
+          >
+            <i class="fa-solid fa-check"></i>
+            提交答案 / Submit
+          </button>
+          <button 
+            onclick="switchPage(3)" 
+            class="px-5 py-2.5 bg-orange-100 hover:bg-orange-200 text-orange-900 font-bold rounded-xl transition flex items-center justify-center gap-2"
+          >
+            课文练习
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 3: Text Exercises (Role-play & Q&A)   -->
+    <!-- ========================================== -->
+    <div id="page3" class="page">
+      
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-orange-100 mb-6">
+        
+        <!-- Instruction Title matching Image 3 -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-orange-100">
+          <div>
+            <div class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <span class="text-[#d93829] font-extrabold">></span>
+              <span>分角色朗读对话，读后回答问题。</span>
+            </div>
+            <p class="text-gray-600 text-base sm:text-lg mt-1 pl-5">
+              Role-play the dialogue and then answer the questions.
+            </p>
+          </div>
+
+          <button 
+            onclick="toggleAllAnswers()" 
+            id="toggleAllBtn"
+            class="self-start sm:self-center px-4 py-2 rounded-xl bg-orange-50 hover:bg-orange-100 text-[#d96f45] border border-orange-200 font-bold text-sm transition flex items-center gap-2"
+          >
+            <i id="toggleAllIcon" class="fa-solid fa-eye"></i>
+            <span id="toggleAllText">显示全部参考答案</span>
+          </button>
+        </div>
+
+        <!-- Two Speech Bubbles & Characters Grid matching Image 3 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-end pt-2">
+          
+          <!-- Left Column: Questions Bubble + Female Character -->
+          <div class="flex flex-col items-center">
+            <div class="speech-bubble rounded-3xl p-6 w-full shadow-sm min-h-[230px] flex flex-col justify-center">
+              <div class="space-y-4 text-base sm:text-lg text-gray-800 font-medium">
+                <div onclick="toggleSingleAnswer(1)" class="p-2.5 rounded-xl hover:bg-orange-50/80 cursor-pointer transition flex items-start justify-between gap-2 group">
+                  <span>(1) 王一飞为什么不想去海边？</span>
+                  <span class="text-xs text-[#f18b62] opacity-75 group-hover:opacity-100 shrink-0 mt-1">
+                    <i class="fa-solid fa-circle-question"></i> 点击看答案
+                  </span>
+                </div>
+                <div onclick="toggleSingleAnswer(2)" class="p-2.5 rounded-xl hover:bg-orange-50/80 cursor-pointer transition flex items-start justify-between gap-2 group">
+                  <span>(2) 王一飞为什么觉得去草原好？</span>
+                  <span class="text-xs text-[#f18b62] opacity-75 group-hover:opacity-100 shrink-0 mt-1">
+                    <i class="fa-solid fa-circle-question"></i> 点击看答案
+                  </span>
+                </div>
+                <div onclick="toggleSingleAnswer(3)" class="p-2.5 rounded-xl hover:bg-orange-50/80 cursor-pointer transition flex items-start justify-between gap-2 group">
+                  <span>(3) 他们在草原上可以做什么？</span>
+                  <span class="text-xs text-[#f18b62] opacity-75 group-hover:opacity-100 shrink-0 mt-1">
+                    <i class="fa-solid fa-circle-question"></i> 点击看答案
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Female Character Illustration -->
+            <div class="mt-6 flex flex-col items-center">
+              <svg class="w-36 h-36" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Hair back -->
+                <path d="M58 95C50 65 65 32 98 32C130 32 145 58 138 92C134 112 115 118 98 118C75 118 62 108 58 95Z" fill="#161824"/>
+                <!-- Face & Neck -->
+                <path d="M90 105V130H112V105" fill="#FFFFFF" stroke="#161824" stroke-width="2.5"/>
+                <path d="M76 74C76 54 92 42 110 44C128 46 136 62 134 84C133 98 124 108 110 108C92 108 76 94 76 74Z" fill="#FFFFFF" stroke="#161824" stroke-width="2.5"/>
+                <!-- Nose & Smile -->
+                <path d="M134 74L140 82L133 85" fill="#FFFFFF" stroke="#161824" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M126 93C129 93 132 91 133 89" stroke="#161824" stroke-width="2.2" stroke-linecap="round"/>
+                <!-- Hair Front Wave -->
+                <path d="M116 44C102 44 96 58 96 72C96 86 84 94 74 90C64 86 64 62 78 46C90 33 108 35 116 44Z" fill="#161824"/>
+                <!-- Ear -->
+                <path d="M89 74C84 74 82 82 88 86" stroke="#161824" stroke-width="2.2" stroke-linecap="round"/>
+                <!-- Coral Shirt -->
+                <path d="M52 188C54 152 68 130 90 128C96 135 106 135 112 128C134 130 146 152 148 188H52Z" fill="#f18b62" stroke="#161824" stroke-width="2.5"/>
+                <!-- Raised Right Hand -->
+                <path d="M148 186L164 162C166 158 162 154 166 146C169 140 173 141 171 148L169 154L182 142C185 139 188 142 185 146L175 157L186 149C189 147 192 150 188 154L177 163L186 158C189 156 191 160 187 163L174 173L162 188" fill="#FFFFFF" stroke="#161824" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M84 162L81 188" stroke="#161824" stroke-width="2.2" stroke-linecap="round"/>
+                <path d="M130 155L137 188" stroke="#161824" stroke-width="2.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Right Column: Reference Answers Bubble + Male Character -->
+          <div class="flex flex-col items-center">
+            <div class="speech-bubble rounded-3xl p-6 w-full shadow-sm min-h-[230px] flex flex-col justify-center">
+              <div id="answerPlaceholder" class="text-2xl font-bold text-gray-400 tracking-widest py-6 text-center">
+                ……
+              </div>
+
+              <div id="answerList" class="space-y-3.5 text-sm sm:text-base text-gray-800 hidden">
+                <div id="ans1" class="hidden bg-orange-50/90 border border-orange-200 rounded-xl p-3">
+                  <span class="font-bold text-[#d96f45]">(1) 参考答案：</span>
+                  <span>因为去海边的人太多了，而且海边太热，住宾馆也很贵。</span>
+                </div>
+                <div id="ans2" class="hidden bg-orange-50/90 border border-orange-200 rounded-xl p-3">
+                  <span class="font-bold text-[#d96f45]">(2) 参考答案：</span>
+                  <span>因为草原上的夏天不冷也不热，天气特别好，风景也很美。</span>
+                </div>
+                <div id="ans3" class="hidden bg-orange-50/90 border border-orange-200 rounded-xl p-3">
+                  <span class="font-bold text-[#d96f45]">(3) 参考答案：</span>
+                  <span>他们可以在草原上骑马、照相，晚上还可以看月亮、数星星。</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Male Character Illustration -->
+            <div class="mt-6 flex flex-col items-center">
+              <svg class="w-36 h-36" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Neck & Face -->
+                <path d="M92 104V128H114V104" fill="#FFFFFF" stroke="#161824" stroke-width="2.5"/>
+                <path d="M72 72C72 52 86 42 104 42C122 42 132 56 130 78C128 96 116 106 100 106C84 106 72 94 72 72Z" fill="#FFFFFF" stroke="#161824" stroke-width="2.5"/>
+                <!-- Nose & Mouth -->
+                <path d="M72 72L66 80L73 83" fill="#FFFFFF" stroke="#161824" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M74 91C77 91 79 90 81 88" stroke="#161824" stroke-width="2.2" stroke-linecap="round"/>
+                <!-- Hair -->
+                <path d="M74 62C68 54 68 36 84 34C96 32 104 38 116 38C130 38 138 52 134 72C131 86 122 94 114 94C112 82 114 70 106 64C96 58 82 62 74 62Z" fill="#161824"/>
+                <!-- Ear -->
+                <path d="M113 73C118 73 120 81 114 85" stroke="#161824" stroke-width="2.2" stroke-linecap="round"/>
+                <!-- Dark Suit & White Shirt Collar -->
+                <path d="M48 188C52 150 66 130 90 126L103 142L116 126C140 130 152 150 156 188H48Z" fill="#161824"/>
+                <path d="M90 124L103 142L116 124L122 134L108 148L103 142L98 148L84 134L90 124Z" fill="#FFFFFF" stroke="#161824" stroke-width="2"/>
+                <path d="M70 162L67 188" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+                <path d="M120 162L124 188" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Page 3 Navigation Bar -->
+      <div class="flex justify-between items-center bg-white p-4 rounded-2xl border border-orange-100 shadow-sm">
+        <button 
+          onclick="switchPage(2)" 
+          class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition flex items-center gap-2"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+          返回听力选择
+        </button>
+
+        <button 
+          onclick="switchPage(1)" 
+          class="px-6 py-2.5 hsk-orange hsk-orange-hover text-white font-bold rounded-xl shadow-md transition flex items-center gap-2"
+        >
+          <i class="fa-solid fa-house"></i>
+          回到第一页
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Grading Feedback Modal -->
+  <div id="resultModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl transform scale-95 transition-transform duration-300" id="modalCard">
+      <div id="modalIcon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"></div>
+      <h3 id="modalTitle" class="text-2xl font-bold text-gray-800 mb-2"></h3>
+      <p id="modalMessage" class="text-gray-600 mb-6 leading-relaxed"></p>
+      <button onclick="closeModal()" class="w-full py-3 hsk-orange hsk-orange-hover text-white font-bold rounded-xl shadow-md transition">
+        确定 / OK
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Audio Player State
+    const audio = document.getElementById('lessonAudio');
+    let isPlaying = false;
+
+    // Standard Answers for HSK 3 Lesson 4 Text 1: Question (1) -> C, Question (2) -> C
+    const userAnswers = { 1: null, 2: null };
+    const correctAnswers = { 1: 'C', 2: 'C' };
+
+    // Toggle Play/Pause Audio
+    function toggleAudio() {
+      if (isPlaying) {
+        audio.pause();
+      } else {
+        audio.play().catch(e => console.warn("Audio play blocked by browser:", e));
+      }
+    }
+
+    audio.onplay = () => {
+      isPlaying = true;
+      updateAudioUI(true);
+    };
+
+    audio.onpause = () => {
+      isPlaying = false;
+      updateAudioUI(false);
+    };
+
+    audio.ontimeupdate = () => {
+      if (audio.duration) {
+        const pct = (audio.currentTime / audio.duration) * 100;
+        document.getElementById('audioProgressBar').style.width = pct + '%';
+      }
+    };
+
+    audio.onended = () => {
+      isPlaying = false;
+      updateAudioUI(false);
+      document.getElementById('audioProgressBar').style.width = '0%';
+    };
+
+    function updateAudioUI(playing) {
+      const p1Icon = document.getElementById('p1AudioIcon');
+      const p1Status = document.getElementById('p1AudioStatus');
+      const p1IconBg = document.getElementById('p1IconBg');
+      const p2Icon = document.getElementById('p2AudioIcon');
+
+      if (playing) {
+        p1Icon.className = 'fa-solid fa-pause';
+        p1Status.innerText = '正在播放...';
+        p1IconBg.classList.add('audio-pulse');
+        p2Icon.className = 'fa-solid fa-pause text-lg';
+      } else {
+        p1Icon.className = 'fa-solid fa-volume-high';
+        p1Status.innerText = '点击播放课文朗读';
+        p1IconBg.classList.remove('audio-pulse');
+        p2Icon.className = 'fa-solid fa-volume-high text-lg';
+      }
+    }
+
+    function seekAudio(event) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const pct = clickX / rect.width;
+      if (audio.duration) {
+        audio.currentTime = pct * audio.duration;
+      }
+    }
+
+    // Page Switching (Page 1 <-> Page 2 <-> Page 3)
+    function switchPage(pageNumber) {
+      document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+      document.getElementById('page' + pageNumber).classList.add('active');
+
+      // Update Header Banner based on page
+      const headerText1 = document.getElementById('headerText1');
+      const headerTextExercises = document.getElementById('headerTextExercises');
+      if (pageNumber === 3) {
+        headerText1.classList.add('hidden');
+        headerTextExercises.classList.remove('hidden');
+      } else {
+        headerText1.classList.remove('hidden');
+        headerTextExercises.classList.add('hidden');
+      }
+
+      // Update Top Tab Pills
+      [1, 2, 3].forEach(num => {
+        const tab = document.getElementById('tab' + num);
+        if (num === pageNumber) {
+          tab.className = 'px-3 py-1 rounded-full text-xs font-bold transition bg-[#f18b62] text-white shadow-sm';
+        } else {
+          tab.className = 'px-3 py-1 rounded-full text-xs font-bold transition bg-orange-100 text-orange-800 hover:bg-orange-200';
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Option Selection for Page 2
+    function selectOption(qNum, option) {
+      userAnswers[qNum] = option;
+      const options = ['A', 'B', 'C'];
+      options.forEach(opt => {
+        const el = document.getElementById(`q${qNum}_${opt}`);
+        if (el) {
+          if (opt === option) {
+            el.classList.add('selected');
+          } else {
+            el.classList.remove('selected');
+          }
+        }
+      });
+    }
+
+    // Submit & Auto Grading System for Page 2
+    function submitQuiz() {
+      if (!userAnswers[1] || !userAnswers[2]) {
+        showModal(
+          'fa-solid fa-triangle-exclamation text-amber-500 bg-amber-50',
+          '未完成答题',
+          '请先回答第 (1) 和第 (2) 两道题目再提交答案！'
+        );
+        return;
+      }
+
+      let isQ1Correct = userAnswers[1] === correctAnswers[1];
+      let isQ2Correct = userAnswers[2] === correctAnswers[2];
+
+      applyGradingStyles(1, isQ1Correct);
+      applyGradingStyles(2, isQ2Correct);
+
+      if (isQ1Correct && isQ2Correct) {
+        if (typeof confetti === 'function') {
+          confetti({
+            particleCount: 120,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }
+        showModal(
+          'fa-solid fa-trophy text-emerald-500 bg-emerald-50',
+          '回答完全正确！',
+          '恭喜你！两道听力理解题全部答对！<br><b>(1) C 假期做什么<br>(2) C 草原很有意思</b>'
+        );
+      } else {
+        let msg = '';
+        if (!isQ1Correct) msg += '第 (1) 题解答有误；';
+        if (!isQ2Correct) msg += '第 (2) 题解答有误；';
+        msg += '<br>正确选项已为您突出显示，请重新听录音并复习。';
+
+        showModal(
+          'fa-solid fa-circle-xmark text-red-500 bg-red-50',
+          '部分题目有误',
+          msg
+        );
+      }
+    }
+
+    function applyGradingStyles(qNum, isCorrect) {
+      const options = ['A', 'B', 'C'];
+      options.forEach(opt => {
+        const el = document.getElementById(`q${qNum}_${opt}`);
+        el.classList.remove('selected', 'correct-choice', 'wrong-choice');
+
+        if (opt === correctAnswers[qNum]) {
+          el.classList.add('correct-choice');
+        } else if (opt === userAnswers[qNum] && !isCorrect) {
+          el.classList.add('wrong-choice');
+        }
+      });
+    }
+
+    function resetQuiz() {
+      userAnswers[1] = null;
+      userAnswers[2] = null;
+      const options = ['A', 'B', 'C'];
+      [1, 2].forEach(qNum => {
+        options.forEach(opt => {
+          const el = document.getElementById(`q${qNum}_${opt}`);
+          if (el) {
+            el.className = 'quiz-option bg-white/15 rounded-xl p-3.5 px-4 flex items-center gap-3 border border-white/25 text-base sm:text-lg';
+          }
+        });
+      });
+    }
+
+    // Page 3 Reference Answers Toggle Logic
+    const visibleAnswers = { 1: false, 2: false, 3: false };
+
+    function toggleSingleAnswer(num) {
+      visibleAnswers[num] = !visibleAnswers[num];
+      renderAnswersVisibility();
+    }
+
+    function toggleAllAnswers() {
+      const anyHidden = !visibleAnswers[1] || !visibleAnswers[2] || !visibleAnswers[3];
+      visibleAnswers[1] = anyHidden;
+      visibleAnswers[2] = anyHidden;
+      visibleAnswers[3] = anyHidden;
+      renderAnswersVisibility();
+    }
+
+    function renderAnswersVisibility() {
+      const anyVisible = visibleAnswers[1] || visibleAnswers[2] || visibleAnswers[3];
+      const allVisible = visibleAnswers[1] && visibleAnswers[2] && visibleAnswers[3];
+
+      const placeholder = document.getElementById('answerPlaceholder');
+      const answerList = document.getElementById('answerList');
+
+      if (anyVisible) {
+        placeholder.classList.add('hidden');
+        answerList.classList.remove('hidden');
+      } else {
+        placeholder.classList.remove('hidden');
+        answerList.classList.add('hidden');
+      }
+
+      [1, 2, 3].forEach(num => {
+        const el = document.getElementById('ans' + num);
+        if (visibleAnswers[num]) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+
+      const toggleAllText = document.getElementById('toggleAllText');
+      const toggleAllIcon = document.getElementById('toggleAllIcon');
+      if (allVisible) {
+        toggleAllText.innerText = '隐藏全部参考答案';
+        toggleAllIcon.className = 'fa-solid fa-eye-slash';
+      } else {
+        toggleAllText.innerText = '显示全部参考答案';
+        toggleAllIcon.className = 'fa-solid fa-eye';
+      }
+    }
+
+    // Modal Display Functions
+    function showModal(iconClass, title, messageHtml) {
+      const modal = document.getElementById('resultModal');
+      const modalCard = document.getElementById('modalCard');
+      const modalIcon = document.getElementById('modalIcon');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalMessage = document.getElementById('modalMessage');
+
+      modalIcon.className = `w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl ${iconClass}`;
+      modalTitle.innerText = title;
+      modalMessage.innerHTML = messageHtml;
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modalCard.classList.remove('scale-95');
+        modalCard.classList.add('scale-100');
+      }, 10);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('resultModal');
+      const modalCard = document.getElementById('modalCard');
+      modal.classList.add('opacity-0');
+      modalCard.classList.remove('scale-100');
+      modalCard.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+  </script>
+</body>
+</html>
