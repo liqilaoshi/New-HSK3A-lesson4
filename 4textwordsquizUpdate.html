@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HSK 3 第四课 课文一 - 这个假期咱们去哪儿玩玩吧</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Noto Sans SC', 'Roboto', sans-serif;
+      background-color: #fcfaf9;
+      color: #2c3e50;
+      user-select: none;
+    }
+
+    /* HSK 3 Coral Orange Signature Palette */
+    .hsk-orange {
+      background-color: #f18b62;
+    }
+    .hsk-orange-dark {
+      background-color: #d96f45;
+    }
+    .hsk-orange-light {
+      background-color: #fdf2ed;
+    }
+
+    /* Page Navigation Transitions */
+    .page {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .page.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* Floating Interactive Tooltip for Vocabulary (Hover trigger) */
+    .vocab-hl {
+      color: #d96f45;
+      font-weight: 700;
+      background-color: #fdf2ed;
+      padding: 2px 6px;
+      border-radius: 6px;
+      border-bottom: 2px solid #f18b62;
+      cursor: pointer;
+      position: relative;
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+
+    .vocab-hl:hover {
+      background-color: #f18b62;
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    .vocab-tooltip {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 50;
+      width: 220px;
+      pointer-events: none;
+    }
+
+    .vocab-hl:hover .vocab-tooltip,
+    .vocab-hl:focus .vocab-tooltip {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    .vocab-tooltip::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -6px;
+      border-width: 6px;
+      border-style: solid;
+      border-color: #1F2937 transparent transparent transparent;
+    }
+
+    /* Quiz Option Custom Style */
+    .quiz-option {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .quiz-option:hover {
+      background-color: #fdf2ed;
+      border-color: #f18b62;
+    }
+    .quiz-option.selected {
+      background-color: #f18b62 !important;
+      color: white !important;
+      border-color: #f18b62 !important;
+    }
+    .quiz-option.correct {
+      background-color: #dcfce7 !important;
+      color: #15803d !important;
+      border-color: #22c55e !important;
+    }
+    .quiz-option.wrong {
+      background-color: #fee2e2 !important;
+      color: #b91c1c !important;
+      border-color: #ef4444 !important;
+    }
+
+    /* Recording Pulsing animation */
+    .mic-recording {
+      animation: pulse-ring 1.2s infinite;
+      background-color: #ef4444 !important;
+      color: white !important;
+    }
+
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+      70% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between pb-10">
+
+  <!-- Main Container -->
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 w-full flex-grow">
+
+    <!-- Top Navigation Header Banner -->
+    <div class="hsk-orange rounded-2xl p-5 sm:p-6 text-white shadow-md mb-6 relative overflow-hidden">
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
+        <div class="inline-block bg-white/20 backdrop-blur-md text-white text-xs sm:text-sm font-semibold px-4 py-1 rounded-full">
+          Text 1
+        </div>
+        <!-- Pagination Tabs -->
+        <div class="flex flex-wrap gap-1.5 sm:gap-2">
+          <button onclick="goToPage(1)" id="tabBtn1" class="text-xs px-2.5 py-1.5 rounded-lg bg-white text-orange-800 font-bold shadow-xs transition">1. 课文与生词</button>
+          <button onclick="goToPage(2)" id="tabBtn2" class="text-xs px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">2. 第一部分(单选)</button>
+          <button onclick="goToPage(3)" id="tabBtn3" class="text-xs px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">3. 第二部分(认读)</button>
+          <button onclick="goToPage(4)" id="tabBtn4" class="text-xs px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">4. 第三部分(句子)</button>
+          <button onclick="goToPage(5)" id="tabBtn5" class="text-xs px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">5. 第四部分(问答)</button>
+          <button onclick="goToPage(6)" id="tabBtn6" class="text-xs px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-white">6. 第五部分(复述)</button>
+        </div>
+      </div>
+      <div class="text-xl sm:text-2xl md:text-3xl font-bold flex items-start gap-2 leading-snug">
+        <span>课文1：这个假期咱们去哪儿玩玩吧</span>
+      </div>
+      <p class="text-white/90 text-sm sm:text-base font-normal mt-1 italic">
+        Yang Tongle and Wang Yifei are discussing where to travel for the upcoming vacation.
+      </p>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 1: 课文一 & 生词悬浮互动               -->
+    <!-- ========================================== -->
+    <div id="page1" class="page active">
+      
+      <div class="bg-orange-50 border border-orange-200 rounded-xl p-3 mb-6 flex items-center gap-2 text-xs sm:text-sm text-orange-900">
+        <i class="fa-solid fa-lightbulb text-amber-500 text-base"></i>
+        <span>提示：鼠标移至对话中<b>珊瑚橙色高亮生词</b>可实时显示读音、词性与英译。点击生词可听标准发音。</span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-6">
+        
+        <!-- Left 8 cols: Dialogue Bubbles -->
+        <div class="lg:col-span-8 bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-gray-100 space-y-5">
+          
+          <div class="space-y-4">
+              
+            <!-- Line 1: 杨同乐 -->
+            <div class="flex items-start gap-3">
+              <img src="https://i.ibb.co.com/hxdZGkcS/image.png" alt="杨同乐" class="w-11 h-11 rounded-full border-2 border-[#f18b62] shadow-sm object-cover flex-shrink-0" onerror="this.src='https://placehold.co/100x100/f18b62/ffffff?text=Yang';" />
+              <div>
+                <span class="text-xs font-semibold text-gray-500 ml-1">杨同乐</span>
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl rounded-tl-none p-3.5 mt-1 text-sm sm:text-base text-gray-800 shadow-sm leading-relaxed">
+                  这个<span class="vocab-hl" onclick="speakText('假期')">假期<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-amber-400 text-sm block">jiàqī</strong><span class="text-gray-300">n. vacation; holiday</span><span class="block mt-1 text-[10px] text-orange-200">🔊 点击听发音</span></span></span>咱们去哪儿玩玩吧。
+                </div>
+              </div>
+            </div>
+
+            <!-- Line 2: 王一飞 -->
+            <div class="flex items-start gap-3">
+              <img src="https://iili.io/nDJbS19.md.png" alt="王一飞" class="w-11 h-11 rounded-full border-2 border-[#f18b62] shadow-sm object-cover flex-shrink-0" onerror="this.src='https://placehold.co/100x100/f18b62/ffffff?text=Wang';" />
+              <div>
+                <span class="text-xs font-semibold text-gray-500 ml-1">王一飞</span>
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl rounded-tl-none p-3.5 mt-1 text-sm sm:text-base text-gray-800 shadow-sm leading-relaxed">
+                  好啊，你想去哪儿，咱们就去哪儿。
+                </div>
+              </div>
+            </div>
+
+            <!-- Line 3: 杨同乐 -->
+            <div class="flex items-start gap-3">
+              <img src="https://i.ibb.co.com/hxdZGkcS/image.png" alt="杨同乐" class="w-11 h-11 rounded-full border-2 border-[#f18b62] shadow-sm object-cover flex-shrink-0" onerror="this.src='https://placehold.co/100x100/f18b62/ffffff?text=Yang';" />
+              <div>
+                <span class="text-xs font-semibold text-gray-500 ml-1">杨同乐</span>
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl rounded-tl-none p-3.5 mt-1 text-sm sm:text-base text-gray-800 shadow-sm leading-relaxed">
+                  你喜欢<span class="vocab-hl" onclick="speakText('海')">海<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-amber-400 text-sm block">hǎi</strong><span class="text-gray-300">n. sea</span><span class="block mt-1 text-[10px] text-orange-200">🔊 点击听发音</span></span></span>，找个海边住几天，怎么样？
+                </div>
+              </div>
+            </div>
+
+            <!-- Line 4: 王一飞 -->
+            <div class="flex items-start gap-3">
+              <img src="https://iili.io/nDJbS19.md.png" alt="王一飞" class="w-11 h-11 rounded-full border-2 border-[#f18b62] shadow-sm object-cover flex-shrink-0" onerror="this.src='https://placehold.co/100x100/f18b62/ffffff?text=Wang';" />
+              <div>
+                <span class="text-xs font-semibold text-gray-500 ml-1">王一飞</span>
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl rounded-tl-none p-3.5 mt-1 text-sm sm:text-base text-gray-800 shadow-sm leading-relaxed">
+                  现在去海边有点儿冷。
+                </div>
+              </div>
+            </div>
+
+            <!-- Line 5: 杨同乐 -->
+            <div class="flex items-start gap-3">
+              <img src="https://i.ibb.co.com/hxdZGkcS/image.png" alt="杨同乐" class="w-11 h-11 rounded-full border-2 border-[#f18b62] shadow-sm object-cover flex-shrink-0" onerror="this.src='https://placehold.co/100x100/f18b62/ffffff?text=Yang';" />
+              <div>
+                <span class="text-xs font-semibold text-gray-500 ml-1">杨同乐</span>
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl rounded-tl-none p-3.5 mt-1 text-sm sm:text-base text-gray-800 shadow-sm leading-relaxed">
+                  那去<span class="vocab-hl" onclick="speakText('草原')">草原<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-amber-400 text-sm block">cǎoyuán</strong><span class="text-gray-300">n. grassland</span><span class="block mt-1 text-[10px] text-orange-200">🔊 点击听发音</span></span></span>吧？草原一点儿也不冷。
+                </div>
+              </div>
+            </div>
+
+            <!-- Line 6: 王一飞 -->
+            <div class="flex items-start gap-3">
+              <img src="https://iili.io/nDJbS19.md.png" alt="王一飞" class="w-11 h-11 rounded-full border-2 border-[#f18b62] shadow-sm object-cover flex-shrink-0" onerror="this.src='https://placehold.co/100x100/f18b62/ffffff?text=Wang';" />
+              <div>
+                <span class="text-xs font-semibold text-gray-500 ml-1">王一飞</span>
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl rounded-tl-none p-3.5 mt-1 text-sm sm:text-base text-gray-800 shadow-sm leading-relaxed">
+                  这个<span class="vocab-hl" onclick="speakText('主意')">主意<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-amber-400 text-sm block">zhǔyi</strong><span class="text-gray-300">n. idea</span><span class="block mt-1 text-[10px] text-orange-200">🔊 点击听发音</span></span></span>好！我好久没<span class="vocab-hl" onclick="speakText('骑')">骑<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-amber-400 text-sm block">qí</strong><span class="text-gray-300">v. ride</span><span class="block mt-1 text-[10px] text-orange-200">🔊 点击听发音</span></span></span><span class="vocab-hl" onclick="speakText('马')">马<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-amber-400 text-sm block">mǎ</strong><span class="text-gray-300">n. horse</span><span class="block mt-1 text-[10px] text-orange-200">🔊 点击听发音</span></span></span>了。
+                </div>
+              </div>
+            </div>
+
+            <!-- Line 7: 杨同乐 -->
+            <div class="flex items-start gap-3">
+              <img src="https://i.ibb.co.com/hxdZGkcS/image.png" alt="杨同乐" class="w-11 h-11 rounded-full border-2 border-[#f18b62] shadow-sm object-cover flex-shrink-0" onerror="this.src='https://placehold.co/100x100/f18b62/ffffff?text=Yang';" />
+              <div>
+                <span class="text-xs font-semibold text-gray-500 ml-1">杨同乐</span>
+                <div class="bg-gray-50 border border-gray-200 rounded-2xl rounded-tl-none p-3.5 mt-1 text-sm sm:text-base text-gray-800 shadow-sm leading-relaxed">
+                  对，在草原上骑马、吃<span class="vocab-hl" onclick="speakText('羊')">羊<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-amber-400 text-sm block">yáng</strong><span class="text-gray-300">n. sheep; goat</span><span class="block mt-1 text-[10px] text-orange-200">🔊 点击听发音</span></span></span>肉、看<span class="vocab-hl" onclick="speakText('月亮')">月亮<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-amber-400 text-sm block">yuèliang</strong><span class="text-gray-300">n. moon</span><span class="block mt-1 text-[10px] text-orange-200">🔊 点击听发音</span></span></span>，<span class="vocab-hl" onclick="speakText('一定')">一定<span class="vocab-tooltip bg-slate-800 text-white rounded-xl p-3 text-xs shadow-xl"><strong class="text-amber-400 text-sm block">yídìng</strong><span class="text-gray-300">adv. certainly</span><span class="block mt-1 text-[10px] text-orange-200">🔊 点击听发音</span></span></span>很有意思。
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center text-xs text-gray-500">
+            <span><i class="fa-solid fa-volume-high text-[#f18b62] mr-1"></i> 全文朗读：</span>
+            <button onclick="speakText('这个假期咱们去哪儿玩玩吧。好啊，你想去哪儿，咱们就去哪儿。你喜欢海，找个海边住几天，怎么样？现在去海边有点儿冷。那去草原吧？草原一点儿也不冷。这个主意好！我好久没骑马了。对，在草原上骑马、吃羊肉、看月亮，一定很有意思。')" class="bg-orange-50 hover:bg-orange-100 text-orange-800 px-3 py-1.5 rounded-lg border border-orange-200 font-medium transition">
+              <i class="fa-solid fa-play mr-1"></i> 播放对话录音
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Right 4 cols: New Words Sidebar (10 Words from Image 1) -->
+        <div class="lg:col-span-4 bg-orange-50 rounded-3xl p-5 border border-orange-200 shadow-sm sticky top-6">
+          <div class="flex justify-between items-center border-b border-orange-200 pb-3 mb-4">
+            <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2">
+              <span class="bg-white text-orange-700 px-2.5 py-0.5 rounded-lg text-sm border border-orange-200">生词</span>
+              New Words
+            </h3>
+            <button onclick="speakAllVocab()" class="text-orange-800 hover:text-orange-950 text-xs font-medium flex items-center gap-1 bg-white px-2.5 py-1 rounded-lg border border-orange-200 shadow-sm">
+              <i class="fa-solid fa-volume-high"></i> 朗读全部
+            </button>
+          </div>
+
+          <div class="space-y-2.5" id="wordListSidebar">
+            <!-- Dynamic vocab list -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Page 1 Navigation -->
+      <div class="flex justify-end">
+        <button onclick="goToPage(2)" class="px-8 py-3.5 hsk-orange hover:bg-orange-600 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center gap-2">
+          下一页：第一部分（汉英单选测试）
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 2: 第一部分 —— 汉-英单项选择测试      -->
+    <!-- ========================================== -->
+    <div id="page2" class="page">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-6">
+        <div class="border-b border-gray-100 pb-4 mb-6 flex justify-between items-center">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
+              第一部分：HSK3 第四课生词汉-英单项选择小测试
+            </h2>
+            <p class="text-gray-500 text-sm mt-1">Part 1: Vocabulary Chinese-to-English Quiz (10 Questions)</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-gray-400 block">实时得分</span>
+            <span id="quizScoreTag" class="text-xl font-bold text-orange-600">未提交</span>
+          </div>
+        </div>
+
+        <div id="quizContainer" class="space-y-6">
+          <!-- Dynamic quiz items -->
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-gray-100 flex justify-between items-center">
+          <button onclick="resetQuiz()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+            <i class="fa-solid fa-rotate-right mr-1"></i> 重置选择
+          </button>
+          <button onclick="submitQuiz()" class="px-7 py-2.5 hsk-orange hover:bg-orange-600 text-white font-bold rounded-xl shadow-md transition">
+            <i class="fa-solid fa-check mr-1"></i> 提交答案
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="goToPage(1)" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+          <i class="fa-solid fa-arrow-left mr-1"></i> 返回第一页
+        </button>
+        <button onclick="goToPage(3)" class="px-8 py-3.5 hsk-orange hover:bg-orange-600 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center gap-2">
+          下一页：第二部分（认读测试）
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 3: 第二部分 —— 语音识别认读测试        -->
+    <!-- ========================================== -->
+    <div id="page3" class="page">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-8">
+        <div class="border-b border-gray-100 pb-4 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
+              第二部分：汉字认读能力测试（无拼音）
+            </h2>
+            <p class="text-gray-500 text-sm mt-1">Part 2: Character Oral Reading Test (Without Pinyin)</p>
+          </div>
+          <!-- Progress Indicator -->
+          <div class="bg-orange-50 text-orange-900 border border-orange-200 px-4 py-1.5 rounded-full text-xs font-bold">
+            生词进度: <span id="speechWordIndexTag" class="text-orange-600 text-sm">1</span> / <span id="speechTotalWordsTag">10</span>
+          </div>
+        </div>
+
+        <div class="mt-2 text-xs bg-amber-50 text-amber-900 border border-amber-200 p-2.5 rounded-lg flex items-center gap-2 mb-6">
+          <i class="fa-solid fa-microphone text-amber-600"></i>
+          <span>测试要求：不看拼音直接大声读出当前汉字。点击麦克风检测发音，读对即可触发撒花庆祝！遇到困难可点击“显示拼音”。</span>
+        </div>
+
+        <!-- Single Word Flashcard Mode -->
+        <div class="max-w-xl mx-auto" id="speechContainer">
+          <!-- Single Card injected dynamically -->
+        </div>
+
+        <!-- Flashcard Navigation Buttons -->
+        <div class="flex justify-between items-center max-w-xl mx-auto mt-6 pt-4 border-t border-gray-100">
+          <button onclick="prevWordSpeech()" id="prevWordBtn" class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl text-sm transition flex items-center gap-1">
+            <i class="fa-solid fa-chevron-left"></i> 上一个词
+          </button>
+          <button onclick="nextWordSpeech()" id="nextWordBtn" class="px-5 py-2 hsk-orange hover:bg-orange-600 text-white font-medium rounded-xl text-sm transition flex items-center gap-1 shadow-sm">
+            下一个词 <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="goToPage(2)" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+          <i class="fa-solid fa-arrow-left mr-1"></i> 返回第二页
+        </button>
+        <button onclick="goToPage(4)" class="px-8 py-3.5 hsk-orange hover:bg-orange-600 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center gap-2">
+          下一页：第三部分（重点句子朗读）
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 4: 第三部分 —— 重点句子朗读练习        -->
+    <!-- ========================================== -->
+    <div id="page4" class="page">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-6">
+        <div class="border-b border-gray-100 pb-4 mb-6">
+          <h2 class="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <span>第三部分：课文重点句子朗读练习</span>
+            <span class="text-xs bg-orange-100 text-orange-900 px-3 py-1 rounded-full font-normal">录音 & 语音识别测评</span>
+          </h2>
+          <p class="text-gray-500 text-sm mt-1">Part 3: Key Sentence Oral Practice with Voice Recording & Assessment</p>
+        </div>
+
+        <div class="space-y-6" id="sentenceContainer">
+          <!-- Sentence cards -->
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="goToPage(3)" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+          <i class="fa-solid fa-arrow-left mr-1"></i> 返回第三页
+        </button>
+        <button onclick="goToPage(5)" class="px-8 py-3.5 hsk-orange hover:bg-orange-600 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center gap-2">
+          下一页：第四部分（问答互动）
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 5: 第四部分 —— 课文问答 (Q&A)          -->
+    <!-- ========================================== -->
+    <div id="page5" class="page">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-6">
+        
+        <!-- Scene Image Header matching Fig 2 & Fig 1 -->
+        <div class="mb-6 rounded-2xl overflow-hidden border border-orange-100 shadow-sm max-h-[320px] bg-gray-50 flex items-center justify-center">
+          <img src="https://i.ibb.co.com/3myk1d6K/image.png" alt="草原风景" class="w-full h-auto object-cover" />
+        </div>
+
+        <div class="border-b border-gray-100 pb-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div class="flex items-center gap-2 text-xl sm:text-2xl font-bold text-gray-800">
+              <span class="text-[#f18b62] font-serif text-2xl">></span>
+              <span>根据课文及图片内容回答问题。</span>
+            </div>
+            <p class="text-gray-500 text-sm italic mt-1 pl-5">
+              Answer the questions based on the dialogue and scene.
+            </p>
+          </div>
+
+          <div class="hidden sm:flex items-center gap-2 bg-orange-50 px-4 py-2 rounded-2xl border border-orange-100">
+            <i class="fa-solid fa-comments text-[#f18b62] text-xl"></i>
+            <span class="text-xs text-orange-900 font-medium">支持语音录音输入 + 智能自动批改</span>
+          </div>
+        </div>
+
+        <div class="space-y-8">
+          
+          <!-- Question 1 -->
+          <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5" id="qaBox_1">
+            <div class="text-base sm:text-lg font-bold text-gray-800 mb-2 flex items-start gap-2">
+              <span class="text-[#f18b62]">(1)</span>
+              <span>王一飞为什么不想去海边？</span>
+            </div>
+
+            <div class="relative mb-3">
+              <textarea 
+                id="qaText1" 
+                rows="3" 
+                placeholder="请点击下方“语音录音输入”口述答案，或直接打字输入..."
+                class="w-full p-3.5 bg-white rounded-xl border border-gray-300 focus:border-[#f18b62] focus:ring-2 focus:ring-orange-200 text-sm sm:text-base outline-none transition"
+              ></textarea>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <button 
+                id="qaMicBtn1"
+                onclick="toggleVoiceInputQA(1)"
+                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm"
+              >
+                <i class="fa-solid fa-microphone"></i>
+                <span id="qaMicText1">语音录音输入</span>
+              </button>
+
+              <div class="text-xs text-gray-500 font-medium">
+                得分状态：<span id="qaScoreText1" class="font-bold text-gray-600">未检测</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5" id="qaBox_2">
+            <div class="text-base sm:text-lg font-bold text-gray-800 mb-2 flex items-start gap-2">
+              <span class="text-[#f18b62]">(2)</span>
+              <span>他们决定去哪儿？在草原上可以做什么？</span>
+            </div>
+
+            <div class="relative mb-3">
+              <textarea 
+                id="qaText2" 
+                rows="3" 
+                placeholder="请点击下方“语音录音输入”口述答案，或直接打字输入..."
+                class="w-full p-3.5 bg-white rounded-xl border border-gray-300 focus:border-[#f18b62] focus:ring-2 focus:ring-orange-200 text-sm sm:text-base outline-none transition"
+              ></textarea>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <button 
+                id="qaMicBtn2"
+                onclick="toggleVoiceInputQA(2)"
+                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm"
+              >
+                <i class="fa-solid fa-microphone"></i>
+                <span id="qaMicText2">语音录音输入</span>
+              </button>
+
+              <div class="text-xs text-gray-500 font-medium">
+                得分状态：<span id="qaScoreText2" class="font-bold text-gray-600">未检测</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-gray-100 flex justify-between items-center">
+          <button onclick="resetQA()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+            <i class="fa-solid fa-rotate-right mr-1"></i> 重置清空
+          </button>
+          <button onclick="gradeQA()" class="px-7 py-2.5 hsk-orange hover:bg-orange-600 text-white font-bold rounded-xl shadow-md transition">
+            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> 提交自动批改
+          </button>
+        </div>
+
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="goToPage(4)" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+          <i class="fa-solid fa-arrow-left mr-1"></i> 返回第四页
+        </button>
+        <button onclick="goToPage(6)" class="px-8 py-3.5 hsk-orange hover:bg-orange-600 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center gap-2">
+          下一页：第五部分（复述课文）
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 6: 第五部分 —— 按提示复述课文          -->
+    <!-- ========================================== -->
+    <div id="page6" class="page">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 mb-6">
+        
+        <div class="border-b border-gray-100 pb-4 mb-6">
+          <div class="flex items-center gap-2 text-xl sm:text-2xl font-bold text-gray-800">
+            <span class="text-[#f18b62] font-serif text-2xl">></span>
+            <span>根据课文提示完成填空与复述。</span>
+          </div>
+          <p class="text-gray-500 text-sm italic mt-1 pl-5">
+            Retell the text using the provided blanks and voice dictation.
+          </p>
+        </div>
+
+        <!-- Fill in Blanks Retelling Paragraph Card -->
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 sm:p-7 leading-loose text-base sm:text-lg text-gray-800 space-y-4 mb-6">
+          <p>
+            这个
+            <input type="text" id="blank_1" placeholder="请填词" class="inline-block border-b-2 border-[#f18b62] bg-white px-2 py-0.5 w-28 text-orange-900 font-bold text-center outline-none focus:bg-orange-50 rounded" />
+            ，杨同乐和王一飞商量去哪儿玩。杨同乐觉得可以去
+            <input type="text" id="blank_2" placeholder="请填词" class="inline-block border-b-2 border-[#f18b62] bg-white px-2 py-0.5 w-28 text-orange-900 font-bold text-center outline-none focus:bg-orange-50 rounded" />
+            住几天。
+          </p>
+          <p>
+            但是王一飞觉得现在去海边有点儿
+            <input type="text" id="blank_3" placeholder="请填词" class="inline-block border-b-2 border-[#f18b62] bg-white px-2 py-0.5 w-24 text-orange-900 font-bold text-center outline-none focus:bg-orange-50 rounded" />
+            。杨同乐建议去
+            <input type="text" id="blank_4" placeholder="请填词" class="inline-block border-b-2 border-[#f18b62] bg-white px-2 py-0.5 w-28 text-orange-900 font-bold text-center outline-none focus:bg-orange-50 rounded" />
+            ，因为那里一点儿也不冷。
+          </p>
+          <p>
+            王一飞觉得这个
+            <input type="text" id="blank_5" placeholder="请填词" class="inline-block border-b-2 border-[#f18b62] bg-white px-2 py-0.5 w-24 text-orange-900 font-bold text-center outline-none focus:bg-orange-50 rounded" />
+            很好，他好久没
+            <input type="text" id="blank_6" placeholder="请填词" class="inline-block border-b-2 border-[#f18b62] bg-white px-2 py-0.5 w-24 text-orange-900 font-bold text-center outline-none focus:bg-orange-50 rounded" />
+            了。
+          </p>
+          <p>
+            在草原上可以骑
+            <input type="text" id="blank_7" placeholder="请填词" class="inline-block border-b-2 border-[#f18b62] bg-white px-2 py-0.5 w-24 text-orange-900 font-bold text-center outline-none focus:bg-orange-50 rounded" />
+            、吃
+            <input type="text" id="blank_8" placeholder="请填词" class="inline-block border-b-2 border-[#f18b62] bg-white px-2 py-0.5 w-24 text-orange-900 font-bold text-center outline-none focus:bg-orange-50 rounded" />
+            肉、看
+            <input type="text" id="blank_9" placeholder="请填词" class="inline-block border-b-2 border-[#f18b62] bg-white px-2 py-0.5 w-28 text-orange-900 font-bold text-center outline-none focus:bg-orange-50 rounded" />
+            ，
+            <input type="text" id="blank_10" placeholder="请填词" class="inline-block border-b-2 border-[#f18b62] bg-white px-2 py-0.5 w-28 text-orange-900 font-bold text-center outline-none focus:bg-orange-50 rounded" />
+            很有意思。
+          </p>
+        </div>
+
+        <!-- Whole Paragraph Voice Recording & Dictation Controls -->
+        <div class="bg-orange-50 border border-orange-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div class="flex items-center gap-2">
+            <button 
+              id="retellVoiceInputBtn" 
+              onclick="toggleRetellDictation()" 
+              class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm"
+            >
+              <i class="fa-solid fa-microphone"></i>
+              <span id="retellVoiceText">语音识别填空</span>
+            </button>
+            <button 
+              id="retellRecordBtn" 
+              onclick="toggleRetellFullAudio()" 
+              class="px-4 py-2 bg-[#f18b62] hover:bg-orange-600 text-white font-medium rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm"
+            >
+              <i class="fa-solid fa-circle-dot"></i>
+              <span id="retellRecordText">录制复述全音频</span>
+            </button>
+            <button 
+              id="playRetellAudioBtn" 
+              onclick="playRetellFullAudio()" 
+              disabled 
+              class="px-4 py-2 bg-gray-200 text-gray-400 font-medium rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 cursor-not-allowed"
+            >
+              <i class="fa-solid fa-play"></i> 回放整段复述
+            </button>
+          </div>
+
+          <div class="text-xs text-gray-500">
+            复述得分：<span id="retellScoreTag" class="font-bold text-gray-700 text-sm">未检测</span>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-2">
+          <button onclick="resetRetell()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+            <i class="fa-solid fa-rotate-right mr-1"></i> 重置清空
+          </button>
+          <button onclick="gradeRetell()" class="px-7 py-2.5 hsk-orange hover:bg-orange-600 text-white font-bold rounded-xl shadow-md transition">
+            <i class="fa-solid fa-check mr-1"></i> 提交复述自动评分
+          </button>
+        </div>
+
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="goToPage(5)" class="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition">
+          <i class="fa-solid fa-arrow-left mr-1"></i> 返回第四页
+        </button>
+        <button onclick="triggerConfetti(); showModal('fa-solid fa-crown text-amber-500 bg-amber-50', '第四课课文一通关成功！🎉', '恭喜你！完整完成了 HSK 3 第四课课文一的全部生词、单选、认读、句子朗读、问答与课文复述任务！');" class="px-8 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg shadow-lg transition flex items-center gap-2">
+          <i class="fa-solid fa-trophy"></i> 通关全课学习
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Result Modal -->
+  <div id="resultModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl transform scale-95 transition-transform duration-300" id="modalCard">
+      <div id="modalIcon" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"></div>
+      <h3 id="modalTitle" class="text-2xl font-bold text-gray-800 mb-2"></h3>
+      <p id="modalMessage" class="text-gray-600 mb-6 leading-relaxed"></p>
+      <button onclick="closeModal()" class="w-full py-3 hsk-orange hover:bg-orange-600 text-white font-bold rounded-xl shadow-md transition">
+        确定 / OK
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Vocabulary Data (10 Words from HSK 3 Lesson 4 Text 1 - Image 1)
+    const vocabData = [
+      { id: 1, word: '假期', pinyin: 'jiàqī', pos: 'n.', english: 'vacation; holiday', choices: ['vacation; holiday', 'weekend', 'semester', 'birthday'] },
+      { id: 2, word: '海', pinyin: 'hǎi', pos: 'n.', english: 'sea', choices: ['sea', 'mountain', 'river', 'sky'] },
+      { id: 3, word: '草原', pinyin: 'cǎoyuán', pos: 'n.', english: 'grassland', choices: ['grassland', 'desert', 'forest', 'park'] },
+      { id: 4, word: '主意', pinyin: 'zhǔyi', pos: 'n.', english: 'idea', choices: ['idea', 'question', 'problem', 'answer'] },
+      { id: 5, word: '骑', pinyin: 'qí', pos: 'v.', english: 'ride', choices: ['ride', 'drive', 'fly', 'walk'] },
+      { id: 6, word: '马', pinyin: 'mǎ', pos: 'n.', english: 'horse', choices: ['horse', 'cow', 'sheep', 'dog'] },
+      { id: 7, word: '羊', pinyin: 'yáng', pos: 'n.', english: 'sheep; goat', choices: ['sheep; goat', 'pig', 'chicken', 'duck'] },
+      { id: 8, word: '月亮', pinyin: 'yuèliang', pos: 'n.', english: 'moon', choices: ['moon', 'sun', 'star', 'cloud'] },
+      { id: 9, word: '一定', pinyin: 'yídìng', pos: 'adv.', english: 'certainly', choices: ['certainly', 'maybe', 'never', 'usually'] },
+      { id: 10, word: '玩', pinyin: 'wán', pos: 'v.', english: 'play; have fun', choices: ['play; have fun', 'sleep', 'study', 'work'] }
+    ];
+
+    // Key Sentences Data for Part 3
+    const sentenceData = [
+      {
+        id: 1,
+        pinyin: 'Zhège jiàqī zhǒmen qù nǎr wán wan ba.',
+        text: '这个假期咱们去哪儿玩玩吧。',
+        english: 'Let us go somewhere to have some fun during this vacation.',
+        keyPhrases: ['这个假期', '咱们', '去哪儿', '玩玩']
+      },
+      {
+        id: 2,
+        pinyin: 'Nǐ xǐhuan hǎi, zhǎo gè hǎibiān zhù jǐ tiān, zěmne yàng?',
+        text: '你喜欢海，找个海边住几天，怎么样？',
+        english: 'You like the sea. How about staying by the seaside for a few days?',
+        keyPhrases: ['喜欢海', '海边', '住几天', '怎么样']
+      },
+      {
+        id: 3,
+        pinyin: 'Duì, zài cǎoyuán shàng qí mǎ, chī yángròu, kàn yuèliang, yídìng hěn yǒu yìsi.',
+        text: '对，在草原上骑马、吃羊肉、看月亮，一定很有意思。',
+        english: 'Right! Riding horses, eating mutton, and watching the moon on the grassland must be very interesting.',
+        keyPhrases: ['草原上', '骑马', '吃羊肉', '看月亮', '很有意思']
+      }
+    ];
+
+    // Standard Retell Answers & Keywords
+    const retellAnswers = [
+      { id: 1, correct: '假期', keywords: ['假期', '这个假期'] },
+      { id: 2, correct: '海边', keywords: ['海边', '海'] },
+      { id: 3, correct: '冷', keywords: ['冷', '有点冷', '有点儿冷'] },
+      { id: 4, correct: '草原', keywords: ['草原'] },
+      { id: 5, correct: '主意', keywords: ['主意', '这个主意'] },
+      { id: 6, correct: '骑马', keywords: ['骑马', '骑'] },
+      { id: 7, correct: '马', keywords: ['马'] },
+      { id: 8, correct: '羊', keywords: ['羊', '羊肉'] },
+      { id: 9, correct: '月亮', keywords: ['月亮'] },
+      { id: 10, correct: '一定', keywords: ['一定'] }
+    ];
+
+    // Speech Synthesis
+    const synth = window.speechSynthesis;
+    function speakText(text) {
+      if (!synth) return;
+      synth.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'zh-CN';
+      utterance.rate = 0.85;
+      synth.speak(utterance);
+    }
+
+    function speakAllVocab() {
+      const words = vocabData.map(v => v.word).join('，');
+      speakText(words);
+    }
+
+    // Navigation
+    function goToPage(pageNum) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(`page${pageNum}`).classList.add('active');
+
+      [1, 2, 3, 4, 5, 6].forEach(i => {
+        const btn = document.getElementById(`tabBtn${i}`);
+        if (btn) {
+          if (i === pageNum) {
+            btn.className = "text-xs px-2.5 py-1.5 rounded-lg bg-white text-orange-900 font-bold shadow-xs transition";
+          } else {
+            btn.className = "text-xs px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-white";
+          }
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Render Sidebar Words
+    function renderSidebar() {
+      const container = document.getElementById('wordListSidebar');
+      container.innerHTML = vocabData.map(v => `
+        <div onclick="speakText('${v.word}')" class="bg-white rounded-xl p-2.5 border border-orange-100 flex items-center justify-between shadow-2xs hover:border-orange-300 transition cursor-pointer">
+          <div class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-orange-100 text-orange-900 text-[10px] font-bold flex items-center justify-center">${v.id}</span>
+            <div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="font-bold text-gray-800 text-sm">${v.word}</span>
+                <span class="text-[11px] text-[#f18b62] font-mono">${v.pinyin}</span>
+              </div>
+              <div class="text-[10px] text-gray-500">${v.pos} ${v.english}</div>
+            </div>
+          </div>
+          <i class="fa-solid fa-volume-low text-[#f18b62] text-xs"></i>
+        </div>
+      `).join('');
+    }
+
+    // Deterministic Shuffling Helper for Options (Ensure unique options & no duplicate correct keys)
+    function getShuffledChoices(item) {
+      const array = [...item.choices];
+      let hash = 0;
+      for (let i = 0; i < item.word.length; i++) {
+        hash = item.word.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.abs((hash + i * 13) % (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Quiz Part 1 Logic
+    let userAnswers = {};
+
+    function renderQuizPart1() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = vocabData.map((item, idx) => {
+        const choices = getShuffledChoices(item);
+        const labels = ['A', 'B', 'C', 'D'];
+        return `
+          <div class="bg-gray-50/70 rounded-2xl p-4 border border-gray-200">
+            <div class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <span class="bg-[#f18b62] text-white rounded-lg px-2.5 py-0.5 text-xs font-semibold">${idx + 1}</span>
+              <span>生词“<strong class="text-orange-700 text-lg">${item.word}</strong>”的正确英文释义是？</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              ${choices.map((opt, optIdx) => `
+                <div 
+                  onclick="selectQuizOption(${item.id}, ${optIdx})"
+                  id="opt_${item.id}_${optIdx}"
+                  class="quiz-option bg-white rounded-xl p-3 px-4 border border-gray-200 text-gray-700 text-sm flex items-center justify-between"
+                >
+                  <span><strong class="text-[#f18b62] font-semibold mr-1.5">${labels[optIdx]}.</strong>${opt}</span>
+                  <i class="fa-regular fa-circle text-gray-300 opt-icon"></i>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectQuizOption(wordId, selectedOptIdx) {
+      const item = vocabData.find(v => v.id === wordId);
+      const choices = getShuffledChoices(item);
+      const selectedChoiceStr = choices[selectedOptIdx];
+      userAnswers[wordId] = selectedChoiceStr;
+
+      choices.forEach((_, idx) => {
+        const el = document.getElementById(`opt_${wordId}_${idx}`);
+        if (el) {
+          const icon = el.querySelector('.opt-icon');
+          if (idx === selectedOptIdx) {
+            el.className = 'quiz-option selected bg-[#f18b62] text-white rounded-xl p-3 px-4 border border-[#f18b62] text-sm flex items-center justify-between';
+            if (icon) icon.className = 'fa-solid fa-circle-check text-white opt-icon';
+          } else {
+            el.className = 'quiz-option bg-white rounded-xl p-3 px-4 border border-gray-200 text-gray-700 text-sm flex items-center justify-between';
+            if (icon) icon.className = 'fa-regular fa-circle text-gray-300 opt-icon';
+          }
+        }
+      });
+    }
+
+    function submitQuiz() {
+      if (Object.keys(userAnswers).length < vocabData.length) {
+        showModal('fa-solid fa-triangle-exclamation text-amber-500 bg-amber-50', '未完成题目', '请回答完所有 10 道选择题后再提交！');
+        return;
+      }
+
+      let correctCount = 0;
+      vocabData.forEach(item => {
+        const selected = userAnswers[item.id];
+        const isCorrect = selected === item.english;
+        if (isCorrect) correctCount++;
+
+        const choices = getShuffledChoices(item);
+        choices.forEach((opt, idx) => {
+          const el = document.getElementById(`opt_${item.id}_${idx}`);
+          if (el) {
+            el.classList.remove('selected');
+            if (opt === item.english) {
+              el.classList.add('correct');
+            } else if (opt === selected && !isCorrect) {
+              el.classList.add('wrong');
+            }
+          }
+        });
+      });
+
+      const score = Math.round((correctCount / vocabData.length) * 100);
+      document.getElementById('quizScoreTag').innerText = `${score} 分`;
+
+      if (score === 100) {
+        triggerConfetti();
+        showModal('fa-solid fa-trophy text-emerald-500 bg-emerald-50', '全对！满分！', '恭喜你！单项选择题全部答对（得分：100分）！');
+      } else {
+        showModal('fa-solid fa-chart-bar text-blue-500 bg-blue-50', '测试结果', `得分：${score} 分（答对 ${correctCount}/${vocabData.length} 题）。正确选项已绿框标注。`);
+      }
+    }
+
+    function resetQuiz() {
+      userAnswers = {};
+      document.getElementById('quizScoreTag').innerText = '未提交';
+      renderQuizPart1();
+    }
+
+    // Speech Recognition Setup
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    // Part 2: Single Word Oral Test State & Logic
+    let currentSpeechIndex = 0;
+
+    function renderSpeechTest() {
+      const container = document.getElementById('speechContainer');
+      const item = vocabData[currentSpeechIndex];
+      const isSingleChar = item.word.length === 1;
+
+      document.getElementById('speechWordIndexTag').innerText = currentSpeechIndex + 1;
+      document.getElementById('speechTotalWordsTag').innerText = vocabData.length;
+
+      container.innerHTML = `
+        <div class="bg-gray-50 border-2 border-orange-100 rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-between shadow-sm min-h-[280px]">
+          <div class="w-full flex justify-between items-start mb-4">
+            <span class="bg-orange-100 text-orange-900 text-xs px-3 py-1 rounded-full font-bold">生词 #${item.id}</span>
+            <span id="speechStatus_${item.id}" class="text-xs text-gray-400 font-medium bg-white px-3 py-1 rounded-lg border border-gray-200">
+              请朗读该词语
+            </span>
+          </div>
+
+          <!-- Character Display -->
+          <div class="text-center my-3">
+            <span class="text-4xl sm:text-5xl font-bold text-gray-800 tracking-widest block">${item.word}</span>
+            <div id="pinyinHint_${item.id}" class="text-base text-[#f18b62] font-mono mt-3 hidden">
+              拼音: ${item.pinyin}
+            </div>
+            ${isSingleChar ? `
+              <div class="mt-3 text-xs sm:text-sm text-orange-800 font-medium bg-orange-100/70 border border-orange-200 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                <span>想一想，用这个字可以组成哪些词语呢？</span>
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Action Buttons Bar -->
+          <div class="w-full mt-6 pt-4 border-t border-gray-200 flex items-center justify-center gap-3 sm:gap-4">
+            <!-- Left: Toggle Pinyin Hint -->
+            <button 
+              onclick="toggleHint(${item.id})" 
+              class="flex-1 max-w-[140px] py-2.5 px-3 bg-white hover:bg-orange-50 text-orange-900 border border-orange-200 rounded-xl text-xs sm:text-sm font-medium transition shadow-2xs flex items-center justify-center gap-1.5"
+            >
+              <i class="fa-regular fa-eye text-[#f18b62]"></i>
+              <span id="hintBtn_${item.id}">显示拼音</span>
+            </button>
+
+            <!-- Middle: Start Recording / Speech Recognition -->
+            <button 
+              onclick="startWordSpeech(${item.id}, '${item.word}')" 
+              id="micBtn_${item.id}" 
+              class="flex-1 max-w-[160px] py-2.5 px-3 bg-red-500 hover:bg-red-600 text-white rounded-xl text-xs sm:text-sm font-bold transition shadow-md hover:shadow-lg flex items-center justify-center gap-1.5"
+            >
+              <i class="fa-solid fa-microphone"></i>
+              <span>点击朗读</span>
+            </button>
+
+            <!-- Right: Prelisten Demo TTS -->
+            <button 
+              onclick="speakText('${item.word}')" 
+              class="flex-1 max-w-[140px] py-2.5 px-3 bg-white hover:bg-orange-50 text-orange-900 border border-orange-200 rounded-xl text-xs sm:text-sm font-medium transition shadow-2xs flex items-center justify-center gap-1.5"
+            >
+              <i class="fa-solid fa-volume-high text-[#f18b62]"></i>
+              <span>示范发音</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('prevWordBtn').disabled = currentSpeechIndex === 0;
+      document.getElementById('prevWordBtn').className = currentSpeechIndex === 0 
+        ? "px-5 py-2 bg-gray-100 text-gray-300 font-medium rounded-xl text-sm cursor-not-allowed flex items-center gap-1"
+        : "px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl text-sm transition flex items-center gap-1";
+
+      document.getElementById('nextWordBtn').disabled = currentSpeechIndex === vocabData.length - 1;
+      document.getElementById('nextWordBtn').className = currentSpeechIndex === vocabData.length - 1
+        ? "px-5 py-2 bg-gray-100 text-gray-300 font-medium rounded-xl text-sm cursor-not-allowed flex items-center gap-1"
+        : "px-5 py-2 hsk-orange hover:bg-orange-600 text-white font-medium rounded-xl text-sm transition flex items-center gap-1 shadow-sm";
+    }
+
+    function prevWordSpeech() {
+      if (currentSpeechIndex > 0) {
+        currentSpeechIndex--;
+        renderSpeechTest();
+      }
+    }
+
+    function nextWordSpeech() {
+      if (currentSpeechIndex < vocabData.length - 1) {
+        currentSpeechIndex++;
+        renderSpeechTest();
+      }
+    }
+
+    function toggleHint(id) {
+      const el = document.getElementById(`pinyinHint_${id}`);
+      const btn = document.getElementById(`hintBtn_${id}`);
+      if (el.classList.contains('hidden')) {
+        el.classList.remove('hidden');
+        btn.innerText = '隐藏拼音';
+      } else {
+        el.classList.add('hidden');
+        btn.innerText = '显示拼音';
+      }
+    }
+
+    function startWordSpeech(id, targetWord) {
+      if (!SpeechRecognition) {
+        showModal('fa-solid fa-circle-info text-amber-500 bg-amber-50', '提示', '请使用 Chrome 或 Edge 浏览器体验语音识别功能。');
+        return;
+      }
+
+      const rec = new SpeechRecognition();
+      rec.lang = 'zh-CN';
+      rec.continuous = false;
+      rec.interimResults = false;
+
+      const btn = document.getElementById(`micBtn_${id}`);
+      const status = document.getElementById(`speechStatus_${id}`);
+
+      btn.classList.add('mic-recording');
+      status.innerHTML = `<span class="text-red-500 font-bold"><i class="fa-solid fa-wave-square animate-pulse mr-1"></i>请朗读该词...</span>`;
+
+      rec.start();
+
+      rec.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.trim();
+        btn.classList.remove('mic-recording');
+
+        if (transcript.includes(targetWord) || targetWord.includes(transcript)) {
+          triggerConfetti();
+          status.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check mr-1"></i>读对了! ("${transcript}") 🎉</span>`;
+          speakText('读得非常好');
+        } else {
+          status.innerHTML = `<span class="text-red-500 font-medium"><i class="fa-solid fa-xmark mr-1"></i>识别为 "${transcript}"，请再试一次</span>`;
+        }
+      };
+
+      rec.onerror = () => {
+        btn.classList.remove('mic-recording');
+        status.innerHTML = `<span class="text-amber-600">未清楚识别，请再试一次</span>`;
+      };
+    }
+
+    // Part 3: Sentence Recording Logic
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let sentenceAudioMap = {};
+    let isRecordingMap = {};
+
+    function renderSentencePractice() {
+      const container = document.getElementById('sentenceContainer');
+      container.innerHTML = sentenceData.map(s => `
+        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-xs">
+          <div class="mb-4">
+            <span class="text-xs text-[#f18b62] font-mono block mb-1">${s.pinyin}</span>
+            <h4 class="text-base sm:text-lg font-bold text-gray-800 leading-snug">${s.text}</h4>
+            <p class="text-xs text-gray-500 italic mt-1">${s.english}</p>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-gray-200">
+            <button onclick="speakText('${s.text}')" class="px-3.5 py-2 bg-orange-50 hover:bg-orange-100 text-orange-900 font-medium rounded-lg text-xs sm:text-sm transition flex items-center gap-1.5">
+              <i class="fa-solid fa-volume-high text-[#f18b62]"></i> 示范音
+            </button>
+
+            <div class="flex items-center gap-2">
+              <button 
+                id="recBtn_${s.id}" 
+                onclick="toggleSentenceRecord(${s.id})"
+                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm"
+              >
+                <i class="fa-solid fa-microphone"></i>
+                <span id="recText_${s.id}">开始录音</span>
+              </button>
+
+              <button 
+                id="playSelfBtn_${s.id}"
+                onclick="playSelfRecord(${s.id})"
+                disabled
+                class="px-4 py-2 bg-gray-200 text-gray-400 font-medium rounded-lg text-xs sm:text-sm transition flex items-center gap-1.5 cursor-not-allowed"
+              >
+                <i class="fa-solid fa-play"></i> 回放录音
+              </button>
+
+              <button 
+                onclick="evaluateSentenceRec(${s.id})"
+                class="px-4 py-2 hsk-orange hover:bg-orange-600 text-white font-medium rounded-lg text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm"
+              >
+                <i class="fa-solid fa-wand-magic-sparkles"></i> 测评认读
+              </button>
+            </div>
+          </div>
+
+          <div id="sentenceStatus_${s.id}" class="mt-2 text-xs text-gray-400 px-1">
+            <i class="fa-solid fa-info-circle"></i> 点击“开始录音”录制自己的发音，或点击“测评认读”检测口语
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function toggleSentenceRecord(id) {
+      const recBtn = document.getElementById(`recBtn_${id}`);
+      const recText = document.getElementById(`recText_${id}`);
+      const status = document.getElementById(`sentenceStatus_${id}`);
+
+      if (!isRecordingMap[id]) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+          mediaRecorder.onstop = () => {
+            const blob = new Blob(audioChunks, { type: 'audio/mp3' });
+            sentenceAudioMap[id] = URL.createObjectURL(blob);
+            
+            const playBtn = document.getElementById(`playSelfBtn_${id}`);
+            playBtn.disabled = false;
+            playBtn.className = "px-4 py-2 bg-[#f18b62] hover:bg-orange-600 text-white font-medium rounded-lg text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm cursor-pointer";
+          };
+
+          mediaRecorder.start();
+          isRecordingMap[id] = true;
+          recBtn.className = "px-4 py-2 bg-red-600 text-white font-medium rounded-lg text-xs sm:text-sm transition flex items-center gap-1.5 mic-recording";
+          recText.innerText = "停止录音";
+          status.innerHTML = `<span class="text-red-500 font-bold">正在录音中... (请大声朗读)</span>`;
+        } catch (err) {
+          showModal('fa-solid fa-triangle-exclamation text-amber-500 bg-amber-50', '权限警告', '请在浏览器允许网页访问麦克风。');
+        }
+      } else {
+        if (mediaRecorder) mediaRecorder.stop();
+        isRecordingMap[id] = false;
+        recBtn.className = "px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm";
+        recText.innerText = "重新录音";
+        status.innerHTML = `<span class="text-emerald-600 font-bold">录音保存成功！点击“回放录音”可播放试听。</span>`;
+      }
+    }
+
+    function playSelfRecord(id) {
+      if (sentenceAudioMap[id]) {
+        const audio = new Audio(sentenceAudioMap[id]);
+        audio.play();
+      }
+    }
+
+    let activeSentenceRec = null;
+
+    function evaluateSentenceRec(id) {
+      if (!SpeechRecognition) {
+        showModal('fa-solid fa-info-circle text-amber-500 bg-amber-50', '提示', '请使用 Chrome 或 Edge 浏览器进行测评。');
+        return;
+      }
+
+      if (activeSentenceRec) {
+        try { activeSentenceRec.stop(); } catch(e) {}
+      }
+
+      const sData = sentenceData.find(s => s.id === id);
+      const status = document.getElementById(`sentenceStatus_${id}`);
+
+      activeSentenceRec = new SpeechRecognition();
+      activeSentenceRec.lang = 'zh-CN';
+      activeSentenceRec.continuous = true;
+      activeSentenceRec.interimResults = true;
+
+      let fullTranscript = '';
+      status.innerHTML = `<span class="text-orange-700 font-bold"><i class="fa-solid fa-wave-square animate-pulse"></i> 正在聆听，请完整朗读整句...</span>`;
+
+      activeSentenceRec.onresult = (e) => {
+        let currentCombined = '';
+        for (let i = 0; i < e.results.length; i++) {
+          currentCombined += e.results[i][0].transcript;
+        }
+        fullTranscript = currentCombined.trim();
+        status.innerHTML = `<span class="text-orange-700 font-medium"><i class="fa-solid fa-wave-square animate-pulse"></i> 正在录音: "${fullTranscript}" ...</span>`;
+      };
+
+      activeSentenceRec.onerror = () => {
+        status.innerHTML = `<span class="text-amber-600">录音检测中断，请重试朗读。</span>`;
+      };
+
+      activeSentenceRec.onend = () => {
+        if (!fullTranscript) {
+          status.innerHTML = `<span class="text-amber-600">未收到清晰发音，请重试。</span>`;
+          return;
+        }
+
+        let matchedCount = 0;
+        sData.keyPhrases.forEach(phrase => {
+          if (fullTranscript.includes(phrase)) matchedCount++;
+        });
+
+        const phraseRatio = matchedCount / sData.keyPhrases.length;
+
+        if (phraseRatio >= 0.75) {
+          triggerConfetti();
+          status.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 识别为："${fullTranscript}" (朗读准确流利，通关！🎉)</span>`;
+          speakText('朗读得非常标准');
+        } else {
+          status.innerHTML = `<span class="text-amber-700 font-medium"><i class="fa-solid fa-circle-exclamation text-amber-500"></i> 识别为："${fullTranscript}" <br><span class="text-xs text-red-500">（存在部分生词发音不准，请对照示范音重新练习）</span></span>`;
+        }
+      };
+
+      activeSentenceRec.start();
+    }
+
+    // Confetti Fireworks Dynamic Reaction
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    // Modal Control Helper
+    function showModal(iconClass, title, message) {
+      const modal = document.getElementById('resultModal');
+      const modalCard = document.getElementById('modalCard');
+      document.getElementById('modalIcon').className = `w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl ${iconClass}`;
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalMessage').innerHTML = message;
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modalCard.classList.remove('scale-95');
+        modalCard.classList.add('scale-100');
+      }, 10);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('resultModal');
+      const modalCard = document.getElementById('modalCard');
+      modal.classList.add('opacity-0');
+      modalCard.classList.remove('scale-100');
+      modalCard.classList.add('scale-95');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    // Page 5 Q&A Logic
+    let qaRecognition = null;
+    let isQARecordingMap = {};
+
+    function toggleVoiceInputQA(qId) {
+      if (!SpeechRecognition) {
+        showModal('fa-solid fa-circle-info text-amber-500 bg-amber-50', '提示', '当前浏览器不支持语音输入，请使用 Chrome 或 Edge 浏览器。');
+        return;
+      }
+
+      const micBtn = document.getElementById(`qaMicBtn${qId}`);
+      const micText = document.getElementById(`qaMicText${qId}`);
+      const textArea = document.getElementById(`qaText${qId}`);
+      const statusText = document.getElementById(`qaScoreText${qId}`);
+
+      if (!isQARecordingMap[qId]) {
+        try {
+          if (qaRecognition) {
+            try { qaRecognition.stop(); } catch(e){}
+          }
+
+          qaRecognition = new SpeechRecognition();
+          qaRecognition.lang = 'zh-CN';
+          qaRecognition.continuous = true;
+          qaRecognition.interimResults = true;
+
+          qaRecognition.onstart = () => {
+            isQARecordingMap[qId] = true;
+            micBtn.classList.add('mic-recording');
+            micText.innerText = '正在录音... (点击停止)';
+            if (statusText) statusText.innerText = '正在聆听回答...';
+          };
+
+          qaRecognition.onresult = (e) => {
+            let transcript = '';
+            for (let i = 0; i < e.results.length; i++) {
+              transcript += e.results[i][0].transcript;
+            }
+            textArea.value = transcript;
+          };
+
+          qaRecognition.onerror = () => {
+            isQARecordingMap[qId] = false;
+            micBtn.classList.remove('mic-recording');
+            micText.innerText = '语音录音输入';
+            if (statusText) statusText.innerText = '录音中断，请重试';
+          };
+
+          qaRecognition.onend = () => {
+            isQARecordingMap[qId] = false;
+            micBtn.classList.remove('mic-recording');
+            micText.innerText = '语音录音输入';
+            if (statusText && textArea.value.trim()) {
+              statusText.innerText = '已完成录音转文字';
+            }
+          };
+
+          qaRecognition.start();
+        } catch (err) {
+          showModal('fa-solid fa-triangle-exclamation text-amber-500 bg-amber-50', '提示', '请在浏览器设置中开启麦克风权限。');
+        }
+      } else {
+        if (qaRecognition) {
+          try { qaRecognition.stop(); } catch(e){}
+        }
+        isQARecordingMap[qId] = false;
+        micBtn.classList.remove('mic-recording');
+        micText.innerText = '语音录音输入';
+      }
+    }
+
+    function gradeQA() {
+      const q1Ans = document.getElementById('qaText1').value.trim();
+      const q2Ans = document.getElementById('qaText2').value.trim();
+
+      if (!q1Ans && !q2Ans) {
+        showModal('fa-solid fa-circle-exclamation text-amber-500 bg-amber-50', '提示', '请先输入或使用语音回答第 (1) 和第 (2) 题后再提交自动批改。');
+        return;
+      }
+
+      // Q1 Keywords: 冷, 海边
+      const q1Keywords = ['冷', '海边'];
+      let q1Score = 0;
+      q1Keywords.forEach(kw => { if (q1Ans.includes(kw)) q1Score += 50; });
+      if (q1Score > 100) q1Score = 100;
+
+      // Q2 Keywords: 草原, 骑马, 羊肉, 月亮
+      const q2Keywords = ['草原', '骑马', '羊肉', '月亮'];
+      let q2Score = 0;
+      q2Keywords.forEach(kw => { if (q2Ans.includes(kw)) q2Score += 25; });
+      if (q2Score > 100) q2Score = 100;
+
+      if (q1Ans && q1Score < 40) q1Score = 60;
+      if (q2Ans && q2Score < 40) q2Score = 60;
+
+      document.getElementById('qaScoreText1').innerHTML = q1Ans ? `<span class="text-orange-600 font-bold">${q1Score}分</span>` : '<span class="text-red-500">未回答</span>';
+      document.getElementById('qaScoreText2').innerHTML = q2Ans ? `<span class="text-orange-600 font-bold">${q2Score}分</span>` : '<span class="text-red-500">未回答</span>';
+
+      const avgScore = Math.round(((q1Ans ? q1Score : 0) + (q2Ans ? q2Score : 0)) / (q1Ans && q2Ans ? 2 : 1));
+
+      if (avgScore >= 80) {
+        triggerConfetti();
+        showModal('fa-solid fa-trophy text-emerald-500 bg-emerald-50', '自动批改得分：' + avgScore + '分！', '太棒了！您的回答非常准确！<br><br><b>参考答案：</b><br>(1) 王一飞觉得现在去海边有点儿冷。<br>(2) 他们决定去草原。在草原上可以骑马、吃羊肉、看月亮。');
+      } else {
+        showModal('fa-solid fa-chart-line text-blue-500 bg-blue-50', '自动批改得分：' + avgScore + '分', '回答良好！请对比参考答案完善表达。<br><br><b>参考答案：</b><br>(1) 因为现在去海边有点儿冷。<br>(2) 决定去草原。可以在草原上骑马、吃羊肉、看月亮。');
+      }
+    }
+
+    function resetQA() {
+      document.getElementById('qaText1').value = '';
+      document.getElementById('qaText2').value = '';
+      document.getElementById('qaScoreText1').innerText = '未检测';
+      document.getElementById('qaScoreText2').innerText = '未检测';
+    }
+
+    // Page 6 Retell Logic
+    let retellRecognition = null;
+    let isRetellDictating = false;
+    let retellMediaRecorder = null;
+    let retellAudioChunks = [];
+    let retellAudioUrl = null;
+    let isRetellRecordingFull = false;
+
+    function toggleRetellDictation() {
+      if (!SpeechRecognition) {
+        showModal('fa-solid fa-circle-info text-amber-500 bg-amber-50', '提示', '请使用 Chrome 或 Edge 浏览器进行语音识别。');
+        return;
+      }
+
+      const btn = document.getElementById('retellVoiceInputBtn');
+      const btnText = document.getElementById('retellVoiceText');
+
+      if (!isRetellDictating) {
+        retellRecognition = new SpeechRecognition();
+        retellRecognition.lang = 'zh-CN';
+        retellRecognition.continuous = true;
+        retellRecognition.interimResults = true;
+
+        retellRecognition.onstart = () => {
+          isRetellDictating = true;
+          btn.classList.add('mic-recording');
+          btnText.innerText = '请朗读复述段落...';
+        };
+
+        retellRecognition.onresult = (e) => {
+          let transcript = '';
+          for (let i = 0; i < e.results.length; i++) {
+            transcript += e.results[i][0].transcript;
+          }
+          
+          retellAnswers.forEach(item => {
+            const input = document.getElementById(`blank_${item.id}`);
+            if (input && !input.value.trim()) {
+              item.keywords.forEach(kw => {
+                if (transcript.includes(kw)) {
+                  input.value = item.correct;
+                }
+              });
+            }
+          });
+        };
+
+        retellRecognition.onend = () => {
+          isRetellDictating = false;
+          btn.classList.remove('mic-recording');
+          btnText.innerText = '语音识别填空';
+        };
+
+        retellRecognition.start();
+      } else {
+        if (retellRecognition) {
+          try { retellRecognition.stop(); } catch(e){}
+        }
+        isRetellDictating = false;
+        btn.classList.remove('mic-recording');
+        btnText.innerText = '语音识别填空';
+      }
+    }
+
+    async function toggleRetellFullAudio() {
+      const recBtn = document.getElementById('retellRecordBtn');
+      const recText = document.getElementById('retellRecordText');
+      const playBtn = document.getElementById('playRetellAudioBtn');
+
+      if (!isRetellRecordingFull) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          retellMediaRecorder = new MediaRecorder(stream);
+          retellAudioChunks = [];
+
+          retellMediaRecorder.ondataavailable = e => retellAudioChunks.push(e.data);
+          retellMediaRecorder.onstop = () => {
+            const blob = new Blob(retellAudioChunks, { type: 'audio/mp3' });
+            retellAudioUrl = URL.createObjectURL(blob);
+            
+            playBtn.disabled = false;
+            playBtn.className = "px-4 py-2 bg-[#f18b62] hover:bg-orange-600 text-white font-medium rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm cursor-pointer";
+          };
+
+          retellMediaRecorder.start();
+          isRetellRecordingFull = true;
+          recBtn.className = "px-4 py-2 bg-red-600 text-white font-medium rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 mic-recording";
+          recText.innerText = "停止录音";
+        } catch (err) {
+          showModal('fa-solid fa-triangle-exclamation text-amber-500 bg-amber-50', '麦克风权限', '请开启麦克风权限。');
+        }
+      } else {
+        if (retellMediaRecorder) retellMediaRecorder.stop();
+        isRetellRecordingFull = false;
+        recBtn.className = "px-4 py-2 bg-[#f18b62] hover:bg-orange-600 text-white font-medium rounded-xl text-xs sm:text-sm transition flex items-center gap-1.5 shadow-sm";
+        recText.innerText = "重新录制整段";
+      }
+    }
+
+    function playRetellFullAudio() {
+      if (retellAudioUrl) {
+        const audio = new Audio(retellAudioUrl);
+        audio.play();
+      }
+    }
+
+    function gradeRetell() {
+      let correctCount = 0;
+      retellAnswers.forEach(item => {
+        const input = document.getElementById(`blank_${item.id}`);
+        const val = input.value.trim();
+        let matched = false;
+
+        item.keywords.forEach(kw => {
+          if (val.includes(kw)) matched = true;
+        });
+
+        if (matched) {
+          correctCount++;
+          input.className = "inline-block border-b-2 border-emerald-500 bg-emerald-100 px-2 py-0.5 w-28 text-emerald-900 font-bold text-center outline-none rounded";
+        } else if (val) {
+          input.className = "inline-block border-b-2 border-red-500 bg-red-100 px-2 py-0.5 w-28 text-red-900 font-bold text-center outline-none rounded";
+        }
+      });
+
+      const score = Math.round((correctCount / retellAnswers.length) * 100);
+      document.getElementById('retellScoreTag').innerText = `${score} 分`;
+
+      if (score >= 80) {
+        triggerConfetti();
+        showModal('fa-solid fa-trophy text-emerald-500 bg-emerald-50', '复述得分为：' + score + '分！🎉', '优秀！您已准确复述了课文全部要点！');
+      } else {
+        showModal('fa-solid fa-chart-line text-blue-500 bg-blue-50', '复述得分：' + score + '分', `完成了 ${correctCount} / ${retellAnswers.length} 个空缺。错误或未填写的项已用红线标出，请重试！`);
+      }
+    }
+
+    function resetRetell() {
+      retellAnswers.forEach(item => {
+        const input = document.getElementById(`blank_${item.id}`);
+        if (input) {
+          input.value = '';
+          input.className = "inline-block border-b-2 border-[#f18b62] bg-white px-2 py-0.5 w-28 text-orange-900 font-bold text-center outline-none focus:bg-orange-50 rounded";
+        }
+      });
+      document.getElementById('retellScoreTag').innerText = '未检测';
+    }
+
+    // Page Load Init
+    window.onload = () => {
+      renderSidebar();
+      renderQuizPart1();
+      renderSpeechTest();
+      renderSentencePractice();
+      goToPage(1);
+    };
+  </script>
+</body>
+</html>
